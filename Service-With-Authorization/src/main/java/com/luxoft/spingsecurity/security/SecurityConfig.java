@@ -34,7 +34,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/company/**", "/user/**").authenticated()
-                .antMatchers("/login", "/deny.html", "/logout").permitAll()
+                .antMatchers("/login", "/deny.html", "/logout", "/whoami").permitAll()
                 .antMatchers("/info").hasAuthority("ROLE_ANON")
                 .antMatchers("/**").denyAll()
                 .and()
