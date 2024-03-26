@@ -1,5 +1,6 @@
 package com.luxoft.spingsecurity.security;
 
+import com.luxoft.spingsecurity.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,6 +10,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import java.util.Collections;
 
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -31,7 +34,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/company/**", "/user/**").authenticated()
-                .antMatchers("/info", "/login", "/deny.html", "/logout").permitAll()
+                .antMatchers("/login", "/deny.html", "/logout").permitAll()
+                .antMatchers("/info").hasAuthority("ROLE_ANON")
                 .antMatchers("/**").denyAll()
                 .and()
                 .formLogin()
@@ -41,7 +45,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .defaultSuccessUrl("/company", true)
                 .and()
                 .logout()
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"));
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .and()
+                .anonymous()
+                .authorities("ROLE_ANON") // ROLE_ANONYMOUS by default
+                .principal(new UserDetailsAdapter(anonymous()));
         // @formatter:on
     }
 
@@ -49,5 +57,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService)
                 .passwordEncoder(new BCryptPasswordEncoder(10));
+    }
+
+    private static User anonymous() {
+        User user = new User();
+        user.setId(-1);
+        user.setLogin("anonymous");
+        user.setPassword(""); user.setRoles(Collections.singletonList("ROLE_ANON"));
+        return user;
     }
 }
