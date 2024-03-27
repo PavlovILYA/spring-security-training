@@ -2,6 +2,7 @@ package com.luxoft.spingsecurity.security;
 
 import com.luxoft.spingsecurity.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -17,6 +18,9 @@ import java.util.Collections;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @Value("${security.remember.me.key}")
+    private String rememberMeKey;
 
     @Override
     public void configure(WebSecurity web) {
@@ -49,7 +53,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .anonymous()
                 .authorities("ROLE_ANON") // ROLE_ANONYMOUS by default
-                .principal(new UserDetailsAdapter(anonymous()));
+                .principal(new UserDetailsAdapter(anonymous()))
+                .and()
+                .rememberMe()
+                .alwaysRemember(true)
+                .key(rememberMeKey);;
         // @formatter:on
     }
 
