@@ -15,7 +15,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import java.util.Collections;
 
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
     @Autowired
     private UserDetailsService userDetailsService;
 
@@ -57,7 +59,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .rememberMe()
                 .alwaysRemember(true)
-                .key(rememberMeKey);;
+                .key(rememberMeKey);
         // @formatter:on
     }
 

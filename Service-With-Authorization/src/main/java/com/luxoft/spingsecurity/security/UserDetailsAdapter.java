@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 @Getter
 @RequiredArgsConstructor
 public class UserDetailsAdapter implements UserDetails {
+
     private final User user;
 
     @Override

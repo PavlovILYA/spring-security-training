@@ -4,6 +4,8 @@ import com.luxoft.spingsecurity.dto.UserDto;
 import com.luxoft.spingsecurity.dto.converters.UserDtoConverter;
 import com.luxoft.spingsecurity.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +21,7 @@ public class UserService {
     private final UserDtoConverter userDtoConverter;
     private final CurrentUserService currentUserService;
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Transactional(readOnly = true)
     public List<UserDto> getAll() {
         return userRepository.findAll().stream()
@@ -26,6 +29,7 @@ public class UserService {
             .collect(toList());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional(readOnly = true)
     public UserDto getById(long userId) {
         return userRepository.findById(userId)
@@ -33,6 +37,7 @@ public class UserService {
             .orElseThrow(() -> new IllegalArgumentException("User does not exist"));
     }
 
+    @Secured("ROLE_ADMIN")
     @Transactional
     public UserDto create(UserDto userDto) {
         var user = userDtoConverter.toDomain(userDto);
@@ -40,6 +45,7 @@ public class UserService {
         return userDtoConverter.toDto(withId);
     }
 
+    @Secured("ROLE_ADMIN")
     @Transactional
     public UserDto update(UserDto userDto) {
         var user = userRepository.findById(userDto.getId())
